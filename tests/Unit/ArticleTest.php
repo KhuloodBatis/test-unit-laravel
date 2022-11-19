@@ -2,17 +2,24 @@
 
 namespace Tests\Unit;
 
+use App\Models\Article;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use PHPUnit\Framework\TestCase;
 
 class ArticleTest extends TestCase
 {
-    /**
-     * A basic unit test example.
-     *
-     * @return void
-     */
-    public function test_example()
+   use DatabaseTransactions;
+
+    public function it_fetches_trending_articles()
     {
-        $this->assertTrue(true);
+        //Given
+         Article::factory(2)->create();
+         Article::factory()->create(['reads'=>10]);
+        $mostPopular = Article::factory()->create(['reads'=>20]);
+
+        $articles = Article::trending();
+
+        $this->assertEquals($mostPopular->id , $articles->first()->id());
+        $this->assertCount(3 , $articles);
     }
 }
